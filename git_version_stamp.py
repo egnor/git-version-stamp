@@ -65,6 +65,9 @@ def _wrap(wrapping: str, text: str, symbol="GIT_VERSION_STAMP") -> str:
     if wrapping == "cpp_flag_shell":
         return f"-D{symbol}={_wrap('c_string_shell', text)}"
     if wrapping == "arduino_cli_flag":
+        cpp = _wrap("cpp_flag", text)
+        return f"--build-property=compiler.cpp.extra_flags={cpp}"
+    if wrapping == "arduino_cli_flag_shell":
         cpp = _wrap("cpp_flag_shell", text)
         return f"--build-property=compiler.cpp.extra_flags={cpp}"
     if wrapping == "shell" or wrapping.endswith("_shell"):
