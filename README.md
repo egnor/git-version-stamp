@@ -32,30 +32,31 @@ Install this package:
 - OR just copy `git_version_stamp.py` (it has no dependencies)
 
 Invoke the utility from inside a git working tree:
-- `git-version-stamp` if installed with `pip` or similar
-- OR `python -m git_version_stamp`
+- `git-version-stamp .` if installed with `pip` or similar
+- OR `python -m git_version_stamp .`
 - OR `./git_version_stamp.py` if you copied the file
 - OR `import git_version_stamp` and use the API described below
 
 By default, it prints a version stamp to stdout reflecting the tree state:
 - `YYYYMMDD-<tag>` if the tree is synced to a tagged version with no changes
-- `YYYMMDD.HHMMSS-git-<hash>` if the tree is synced to an untagged commit
-- `YYYMMDD.HHMMSS-mod-<user>@<host>` if the tree has been modified locally
+- `YYYYMMDD.HHMMSS-git-<hash>` if the tree is synced to an untagged commit
+- `YYYYMMDD.HHMMSS-mod-<user>@<host>` if the tree has been modified locally
 
 The timestamp will be the committer time of the relevant commit, or the
 latest modification time of any locally modified file.
 
-Command line flags are available:
-- `--include <dir/file> ...` (default: `.`) - only scan these files/subtrees
-  and print a version reflecting their state
+Command line arguments:
+- put a list of files/subtrees on the command line to print a version
+  reflecting only their state
 - `--exclude <dir/file> ...` (default: none) - ignore these files/subtrees
 - `--wrap <format>` (default: `text`) - instead of plain text, use:
   - `text` - plain text (default)
   - `json` or `c_string` - JSON quoted string (which is also C/C++-compatible)
   - `cpp_flag` - `-DGIT_VERSION_STAMP=...` for C/C++ preprocessor
-  - `arduino_cli_flag` - `--build-property=compiler.cpp.extra_flags=...` for Arduino CLI
-  - `shell` - quoted for shell scripts (can also append `_shell` to any above)
- - `--debug` - enable debug logging
+  - `arduino_cli_flag` - `--build-property=compiler.cpp.extra_flags=...`
+    for Arduino CLI
+  - `shell` - quoted for shell scripts (or append `_shell` to any above)
+- `--debug` - enable debug logging
 
 ## API
 
@@ -63,14 +64,12 @@ After importing the `git_version_stamp` in Python, you can invoke
 `git_version_stamp.get(include=["."], exclude=[])` to get a `Stamp` object
 representing the repo state.
 
-The `Stamp` object has these properties:
-- `tag` - name of the most recent tag (`""` if untagged)
-- `tag_commit` - SHA-1 of the commit that was tagged (`""` if untagged)
-- `tag_time` - Unix timestamp of the commit that was tagged (`0` if untagged)
-- `commit` - SHA-1 of the most recent commit since the tag (`""` if none)
-- `commit_time` - Unix timestamp of that commit (`0` if none)
-- `local_mod_time` - Unix timestamp of the most recent local edit (`0` if none)
-
-These methods are also available:
-- `str(stamp)` - return the version string as printed by the CLI
-- `stamp.wrap(format="text")` - return a re-encoded string as described above
+The `Stamp` object has these properties/methods:
+- `stamp.tag` - name of the most recent tag (`""` if untagged)
+- `stamp.tag_commit` - SHA-1 of the commit that was tagged (`""` if untagged)
+- `stamp.tag_time` - Unix time of the commit that was tagged (`0` if untagged)
+- `stamp.commit` - SHA-1 of the most recent commit since the tag (`""` if none)
+- `stamp.commit_time` - Unix time of that commit (`0` if none)
+- `stamp.local_mod_time` - Unix time of the most recent local edit (`0` if none)
+- `str(stamp)` - the version string as printed by the CLI
+- `stamp.wrap(format="text")` - a re-encoded string as output by `--wrap`

@@ -1,7 +1,7 @@
 [project]
 name = "git-version-stamp"
-version = "0.2.0"
-description = "Make a version code from git repo/tree status for files of interest"
+version = "0.3.0"
+description = "Make a version from git repo/tree status for files of interest"
 readme = "README.md"
 authors = [{ name = "Dan Egnor", email = "egnor@ofb.net" }]
 requires-python = ">=3.8"

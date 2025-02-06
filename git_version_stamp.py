@@ -5,12 +5,12 @@ import dataclasses
 import getpass
 import json
 import logging
-import pathlib
 import platform
 import re
 import shlex
 import subprocess
 import time
+from pathlib import Path
 
 
 LOGGER = logging.getLogger("git_version_stamp")
@@ -26,7 +26,7 @@ class Stamp:
     local_mod_time: int = 0
 
     def __bool__(self):
-        return self.tag or self.commit or self.local_mod_time
+        return bool(self.tag or self.commit or self.local_mod_time)
 
     def __str__(self):
         return _format(self)
@@ -52,7 +52,7 @@ def _format(stamp):
         t = time.strftime("%Y%m%d", time.gmtime(stamp.tag_time))
         return f"{t}-{stamp.tag}"
 
-    return "0-no-history"
+    return ""  # no commit info
 
 
 def _wrap(wrapping: str, text: str, symbol="GIT_VERSION_STAMP") -> str:
@@ -75,13 +75,13 @@ def _wrap(wrapping: str, text: str, symbol="GIT_VERSION_STAMP") -> str:
     raise ValueError(f"Bad wrapper format: {wrapping}")
 
 
-def get(*, include=["."], exclude=[]):
+def get(*, include, exclude=[]):
     git_toplevel = _shell_lines("git", "rev-parse", "--show-toplevel")[0]
-    top_dir = pathlib.Path(git_toplevel).resolve()
+    top_dir = Path(git_toplevel).resolve()
     include_rel, exclude_rel = [], []
     for paths, add_to in ((include, include_rel), (exclude, exclude_rel)):
         for path in (paths or []):
-            add_to.append(pathlib.Path(path).resolve().relative_to(top_dir))
+            add_to.append(Path(path).resolve().relative_to(top_dir))
 
     LOGGER.debug("  Working tree: %s", top_dir)
     LOGGER.debug("  Inc %s", ", ".join(str(p) for p in include_rel) or "(none)")
@@ -90,7 +90,7 @@ def get(*, include=["."], exclude=[]):
     is_included = lambda name: (
         any(path.is_relative_to(r) for r in include_rel) and
         not any(path.is_relative_to(r) for r in exclude_rel)
-        if (path := pathlib.Path(name)) else False
+        if (path := Path(name)) else False
     )
 
     ref_list_lines = _shell_lines(
@@ -236,16 +236,17 @@ def _shell_lines(*a, **kw):
 def main():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--include", nargs="+", type=pathlib.Path)
-    parser.add_argument("--exclude", nargs="+", type=pathlib.Path)
-    parser.add_argument("--wrap", default="")
+    parser.add_argument("include", metavar="DIR", nargs="+", type=Path)
+    parser.add_argument("--exclude", metavar="DIR", nargs="+", type=Path)
+    parser.add_argument("--wrap", metavar="FORMAT", default="")
     parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
 
     log_level = logging.DEBUG if args.debug else logging.INFO
     logging.basicConfig(level=log_level)
 
-    stamp = get(include=args.include or ["."], exclude=args.exclude)
+    stamp = get(include=args.include, exclude=args.exclude)
+    if not stamp: raise SystemExit("No files found")
     print(stamp.wrap(args.wrap))
 
 
