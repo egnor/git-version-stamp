@@ -34,20 +34,19 @@ Install this package:
 Invoke the utility from inside a git working tree:
 - `git-version-stamp .` if installed with `pip` or similar
 - OR `python -m git_version_stamp .`
-- OR `./git_version_stamp.py` if you copied the file
+- OR `./git_version_stamp.py .` if you copied the file
 - OR `import git_version_stamp` and use the API described below
 
-By default, it prints a version stamp to stdout reflecting the tree state:
+By default, it prints a version stamp to stdout reflecting the (sub)tree state:
 - `YYYYMMDD-<tag>` if the tree is synced to a tagged version with no changes
 - `YYYYMMDD.HHMMSS-git-<hash>` if the tree is synced to an untagged commit
 - `YYYYMMDD.HHMMSS-mod-<user>@<host>` if the tree has been modified locally
 
 The timestamp will be the committer time of the relevant commit, or the
-latest modification time of any locally modified file.
+latest local file modification time.
 
 Command line arguments:
-- put a list of files/subtrees on the command line to print a version
-  reflecting only their state
+- list files/subtrees to scan (files in `.gitignore` will be skipped)
 - `--exclude <dir/file> ...` (default: none) - ignore these files/subtrees
 - `--wrap <format>` (default: `text`) - instead of plain text, use:
   - `text` - plain text (default)
