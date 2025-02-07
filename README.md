@@ -53,7 +53,9 @@ Command line arguments:
   - `text` - plain text (default)
   - `json` or `c_string` - JSON quoted string (which is also C/C++-compatible)
   - `cpp_flag` - `-DGIT_VERSION_STAMP=...` for C/C++ preprocessor
-  - `arduino_cli_flag` - `--build-property=compiler.cpp.extra_flags=...`
+  - `cpp_macro` - `#define GIT_VERSION_STAMP "..."` for C/C++ source
+  - `cpp_symbol` - `extern char GIT_VERSION_STAMP[] = "..."` for C/C++ source
+  - `arduino_cli_flag` - `--build-property=compiler.cpp.extra_flags=-D...`
     for Arduino CLI
   - `shell` - quoted for shell scripts (or append `_shell` to any above)
 - `--debug` - enable debug logging
