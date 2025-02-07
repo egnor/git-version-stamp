@@ -51,10 +51,10 @@ Command line arguments:
 - `--exclude <dir/file> ...` (default: none) - ignore these files/subtrees
 - `--wrap <format>` (default: `text`) - instead of plain text, use:
   - `text` - plain text (default)
-  - `json` or `c_string` - JSON quoted string (which is also C/C++-compatible)
-  - `cpp_flag` - `-DGIT_VERSION_STAMP=...` for C/C++ preprocessor
-  - `cpp_macro` - `#define GIT_VERSION_STAMP "..."` for C/C++ source
-  - `cpp_symbol` - `extern char GIT_VERSION_STAMP[] = "..."` for C/C++ source
+  - `json` or `c_string` - JSON quoted string (also valid C/C++)
+  - `cpp_flag` - `-DGIT_VERSION_STAMP=...` for C/C++ compiler
+  - `cpp_macro` - `#define GIT_VERSION_STAMP "..."` for C/C++
+  - `cpp_symbol` - `extern char GIT_VERSION_STAMP[] = "..."` for C/C++
   - `arduino_cli_flag` - `--build-property=compiler.cpp.extra_flags=-D...`
     for Arduino CLI
   - `shell` - quoted for shell scripts (or append `_shell` to any above)
