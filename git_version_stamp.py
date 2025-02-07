@@ -62,6 +62,10 @@ def _wrap(wrapping: str, text: str, symbol="GIT_VERSION_STAMP") -> str:
         return json.dumps(text)
     if wrapping == "cpp_flag":
         return f"-D{symbol}={_wrap('c_string', text)}"
+    if wrapping == "cpp_macro":
+        return f"#define {symbol} {_wrap('c_string', text)}"
+    if wrapping == "cpp_symbol":
+        return f"extern char const {symbol}[] = {_wrap('c_string', text)};"
     if wrapping == "cpp_flag_shell":
         return f"-D{symbol}={_wrap('c_string_shell', text)}"
     if wrapping == "arduino_cli_flag":
