@@ -238,8 +238,8 @@ def _shell_lines(*a, **kw):
 def main():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("include", metavar="DIR", nargs="+", type=Path)
-    parser.add_argument("--exclude", metavar="DIR", nargs="+", type=Path)
+    parser.add_argument("include", metavar="PATH", nargs="+", type=Path)
+    parser.add_argument("--exclude", metavar="PATH", nargs="+", type=Path)
     parser.add_argument("--wrap", metavar="FORMAT", default="")
     parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
