@@ -88,8 +88,8 @@ def get(*, include, exclude=[]):
             add_to.append(Path(path).resolve().relative_to(top_dir))
 
     LOGGER.debug("  Working tree: %s", top_dir)
-    LOGGER.debug("  Inc %s", ", ".join(str(p) for p in include_rel) or "(none)")
-    LOGGER.debug("  Exc %s", ", ".join(str(p) for p in exclude_rel) or "(none)")
+    LOGGER.debug("  INC %s", ", ".join(str(p) for p in include_rel) or "(none)")
+    LOGGER.debug("  exc %s", ", ".join(str(p) for p in exclude_rel) or "(none)")
 
     is_included = lambda name: (
         any(path.is_relative_to(r) for r in include_rel) and
@@ -156,12 +156,12 @@ def get(*, include, exclude=[]):
                 if not current_time:
                     raise ValueError(f"Early git-diff-tree output: {line}")
                 if is_included(name):
-                    LOGGER.debug("    IN  %s", name)
+                    LOGGER.debug("    INC %s", name)
                     if current_time > out.commit_time:
                         out.commit_time = current_time
                         out.commit = current_sha
                 else:
-                    LOGGER.debug("    out %s", name)
+                    LOGGER.debug("    exc %s", name)
 
         elif line:
             raise ValueError(f"Bad git-diff-tree output: {line}")
@@ -180,24 +180,23 @@ def get(*, include, exclude=[]):
         if file_match := file_change_rx.match(line):
             for name in filter(None, file_match.group("a", "b")):
                 if is_included(name):
-                    LOGGER.debug("  IN  %s", name)
+                    LOGGER.debug("  INC %s", name)
                     name_op[name] = file_match.group("op")
                 else:
-                    LOGGER.debug("  out %s", name)
+                    LOGGER.debug("  exc %s", name)
 
         elif line:
             raise ValueError(f"Bad git-diff-index output: {line}")
 
-    LOGGER.debug("Scanning untracked files (git ls-files)...")
     ls_files_lines = _shell_lines(
-        "git", "ls-files", "--others", "--exclude-standard"
+        "git", "ls-files", "--others", "--exclude-standard", cwd=top_dir
     )
     for name in ls_files_lines:
         if name and is_included(name):
-            LOGGER.debug("  IN  %s", name)
+            LOGGER.debug("  INC %s", name)
             name_op[name] = "?"
         elif name:
-            LOGGER.debug("  out %s", name)
+            LOGGER.debug("  exc %s", name)
 
     name_op_stat = {}
     while name_op:
@@ -223,7 +222,7 @@ def get(*, include, exclude=[]):
         mdate = st and time.strftime('%Y%m%d.%H%M%S', time.gmtime(st.st_mtime))
         debug_lines.append(f"{mdate or '               '} {op} {name}")
     LOGGER.debug(
-        "Found %d modified files in scope%s", len(name_op_stat),
+        "%d modified files in scope%s", len(name_op_stat),
         "".join(f"\n  {line}" for line in debug_lines),
     )
 
@@ -234,7 +233,6 @@ def _shell_lines(*a, **kw):
     LOGGER.debug("🐚 %s", " ".join(shlex.quote(str(arg)) for arg in a))
     ret = subprocess.run(a, stdout=subprocess.PIPE, text=True, check=True, **kw)
     return ret.stdout.strip("\n").split("\n")
-
 
 
 def main():
