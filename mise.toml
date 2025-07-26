@@ -3,4 +3,5 @@ uv = "latest"
 
 [settings]
 experimental = true
+idiomatic_version_file_enable_tools = ["python"]
 python.uv_venv_auto = true
