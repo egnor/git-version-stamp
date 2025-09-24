@@ -12,18 +12,16 @@ You should also consider these more established tools:
 - [versioneer](https://github.com/python-versioneer/python-versioneer#readme)
 - [versioningit](https://versioningit.readthedocs.io/)
 
-The main differences with this one:
+What makes this one different:
 - In general it's much less developed than any of those
 - It doesn't integrate with setuptools, it just spits out a version string
-- It uses timestamp-oriented versioning (rather than last-tag-plus-change-count)
-  for untagged builds, which is more useful for apps or firmware images
-  but less appropriate for libraries
-- It lets you pick a subset of files in the repo via include and exclude
-  lists, and the version is based on the status of those files
+- It uses dates for untagged builds (instead of last-tag-plus-change-count)
+  which is more useful for apps or firmware images but less good for libraries
+- It lets you pick files in the repo via include and exclude lists, and the
+  version is based on the status of those files (eg. for excluding docs)
 
-If you actually use this, maybe let me (egnor@ofb.net) know so I'm a bit
-more motivated to make it a proper project with docs and tests and stuff?
-PRs welcome in any case.
+If you actually use this, let me know (egnor@ofb.net) so I'm more motivated
+to make it a proper project with docs and tests? PRs welcome in any case.
 
 ## Usage
 
@@ -37,10 +35,10 @@ Invoke the utility from inside a git working tree:
 - OR `./git_version_stamp.py .` if you copied the file
 - OR `import git_version_stamp` and use the API described below
 
-By default, it prints a version stamp to stdout reflecting the (sub)tree state:
-- `YYYYMMDD-<tag>` if the tree is synced to a tagged version with no changes
-- `YYYYMMDD.HHMMSS-git-<hash>` if the tree is synced to an untagged commit
-- `YYYYMMDD.HHMMSS-mod-<user>@<host>` if the tree has been modified locally
+It emits a version stamp reflecting (sub)tree state:
+- `YYYYMMDD-<tag>` if files are synced to a tagged version with no changes
+- `YYYYMMDD.HHMMSS-git-<hash>` if files are synced to an untagged commit
+- `YYYYMMDD.HHMMSS-mod-<user>@<host>` if files have been modified locally
 
 The timestamp will be the committer time of the relevant commit, or the
 latest local file modification time.
@@ -61,7 +59,7 @@ Command line arguments:
 
 ## API
 
-After importing the `git_version_stamp` in Python, you can invoke
+After importing `git_version_stamp` in Python, you can invoke
 `git_version_stamp.get(include=["."], exclude=[])` to get a `Stamp` object
 representing the repo state.
 
