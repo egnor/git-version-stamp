@@ -1,19 +1,27 @@
 [project]
-name = "git-version-stamp"
-version = "0.4.1"
-description = "Make a version from git repo/tree status for files of interest"
-readme = "README.md"
 authors = [{ name = "Dan Egnor", email = "egnor@ofb.net" }]
-requires-python = ">=3.9"
 dependencies = []
-
-[project.urls]
-Homepage = "https://github.com/egnor/git-version-stamp/#readme"
-Repoository = "https://github.com/egnor/git-version-stamp.git"
+description = "Make a version from git repo/tree status for files of interest"
+name = "git-version-stamp"
+readme = "README.md"
+requires-python = ">=3.9"
+urls.Homepage = "https://github.com/egnor/git-version-stamp/#readme"
+urls.Repoository = "https://github.com/egnor/git-version-stamp.git"
+version = "0.4.1"
 
 [project.scripts]
 git-version-stamp = "git_version_stamp:main"
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.9.13,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = ["mypy", "ruff"]
+
+[tool.mypy]
+exclude_gitignore = true
+files = "."
+
+[tool.uv.build-backend]
+module-root = ""

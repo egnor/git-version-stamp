@@ -27,7 +27,7 @@ to make it a proper project with docs and tests? PRs welcome in any case.
 
 Install this package:
 - `pip install git-version-stamp` (or use any pip-compatible installer)
-- OR just copy `git_version_stamp.py` (it has no dependencies)
+- OR just copy the `git_version_stamp/` module (it has no dependencies)
 
 Invoke the utility from inside a git working tree:
 - `git-version-stamp .` if installed with `pip` or similar

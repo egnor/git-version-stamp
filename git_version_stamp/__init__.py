@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import copy
 import dataclasses
 import getpass
 import json
@@ -91,11 +90,11 @@ def get(*, include, exclude=[]):
     LOGGER.debug("  INC %s", ", ".join(str(p) for p in include_rel) or "(none)")
     LOGGER.debug("  exc %s", ", ".join(str(p) for p in exclude_rel) or "(none)")
 
-    is_included = lambda name: (
-        any(path.is_relative_to(r) for r in include_rel) and
-        not any(path.is_relative_to(r) for r in exclude_rel)
-        if (path := Path(name)) else False
-    )
+    def is_included(name):
+        return False if not (path := Path(name)) else (
+            any(path.is_relative_to(r) for r in include_rel) and
+            not any(path.is_relative_to(r) for r in exclude_rel)
+        )
 
     ref_list_lines = _shell_lines(
         "git", "for-each-ref", "--sort=-creatordate", "--merged=HEAD",
@@ -119,14 +118,15 @@ def get(*, include, exclude=[]):
         else:
             LOGGER.debug("  Skipping ref: %s", ref_line)
 
-    if not out.tag_commit: LOGGER.debug("  No version tags found")
+    if not out.tag_commit:
+        LOGGER.debug("  No version tags found")
 
     rev_range = f"{out.tag_commit}..HEAD" if out.tag_commit else "HEAD"
     rev_list_lines = _shell_lines("git", "rev-list", rev_range)
     diff_tree_lines = _shell_lines(
         "git", "diff-tree", "-r", "--stdin", "--format=%H %ct",
         *(["--root"] if not out.tag_commit else []),
-        input="".join(f"{l}\n" for l in rev_list_lines),
+        input="".join(f"{line}\n" for line in rev_list_lines),
     )
 
     # <sha> <time>
@@ -248,7 +248,8 @@ def main():
     logging.basicConfig(level=log_level)
 
     stamp = get(include=args.include, exclude=args.exclude)
-    if not stamp: raise SystemExit("No files found")
+    if not stamp:
+        raise SystemExit("No files found")
     print(stamp.wrap(args.wrap))
 
 
